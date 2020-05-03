@@ -13,8 +13,10 @@ Intended benefits of F over Load():
 */
 
 let
+    
+    DefaultExtention=".pq",
+    
     Shared = #shared,
-
 
     //Record.Rename = Load("Record.Rename"),
     //Record.Rename = Record_Rename,
@@ -37,10 +39,10 @@ let
     //If I can make a wrapper function to enable profiling/persistence, wrap these as well
 
     Files = Folder.Files(LoadPath),
-    MFiles = Table.SelectRows(Files, each Text.Lower([Extension]) = ".m"
+    MFiles = Table.SelectRows(Files, each Text.Lower([Extension]) = DefaultExtention
         // and [Folder Path] = LoadPath    // non-recursive
     ),
-    NoExt = Table.TransformColumns(MFiles, {"Name", each Text.Start(_, Text.Length(_)-2)}),
+    NoExt = Table.TransformColumns(MFiles, {"Name", each Text.Start(_, Text.Length(_)-Text.Length(DefaultExtention))}),
     CustomNames = Table.Column(NoExt, "Name"),
     Underscored = List.Transform(CustomNames, each Text.Replace(_, ".", "_")),
     CustomBoth = List.Union({CustomNames, Underscored}),
@@ -50,4 +52,3 @@ let
     Return = SharedAndLoaded
 in
     Return
-
